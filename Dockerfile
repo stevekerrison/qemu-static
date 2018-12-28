@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM debian:stretch-slim AS get
 
 LABEL maintainer="Steve Kerrison <steve@usec.io>"
 RUN apt-get update -y
@@ -11,5 +11,6 @@ RUN curl -s \
 	| xargs curl -L | tar xzf - -C /usr/bin/
 RUN chmod a+x /usr/bin/qemu-arm-static
 RUN apt-get clean
-CMD ["echo", \
-	"qemu-arm-static acquired, maybe you want to use me in multistage build?"]    
+
+FROM scratch
+COPY --from=get /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
